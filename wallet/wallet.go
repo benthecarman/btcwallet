@@ -3482,12 +3482,12 @@ func (w *Wallet) TotalReceivedForAddr(addr btcutil.Address, minConf int32) (btcu
 // returns the transaction upon success.
 func (w *Wallet) SendOutputs(outputs []*wire.TxOut, keyScope *waddrmgr.KeyScope,
 	account uint32, minconf int32, satPerKb btcutil.Amount,
-	coinSelectionStrategy CoinSelectionStrategy, label string) (*wire.MsgTx,
+	coinSelectionStrategy CoinSelectionStrategy, allowDust bool, label string) (*wire.MsgTx,
 	error) {
 
 	return w.sendOutputs(
 		outputs, keyScope, account, minconf, satPerKb,
-		coinSelectionStrategy, label,
+		coinSelectionStrategy, allowDust, label,
 	)
 }
 
@@ -3496,28 +3496,37 @@ func (w *Wallet) SendOutputs(outputs []*wire.TxOut, keyScope *waddrmgr.KeyScope,
 func (w *Wallet) SendOutputsWithInput(outputs []*wire.TxOut,
 	keyScope *waddrmgr.KeyScope,
 	account uint32, minconf int32, satPerKb btcutil.Amount,
-	coinSelectionStrategy CoinSelectionStrategy, label string,
+	coinSelectionStrategy CoinSelectionStrategy, allowDust bool, label string,
 	selectedUtxos []wire.OutPoint) (*wire.MsgTx, error) {
 
 	return w.sendOutputs(outputs, keyScope, account, minconf, satPerKb,
-		coinSelectionStrategy, label, selectedUtxos...)
+		coinSelectionStrategy, allowDust, label, selectedUtxos...)
 }
 
 // sendOutputs creates and sends payment transactions. It returns the
 // transaction upon success.
 func (w *Wallet) sendOutputs(outputs []*wire.TxOut, keyScope *waddrmgr.KeyScope,
 	account uint32, minconf int32, satPerKb btcutil.Amount,
-	coinSelectionStrategy CoinSelectionStrategy, label string,
+	coinSelectionStrategy CoinSelectionStrategy, allowDust bool, label string,
 	selectedUtxos ...wire.OutPoint) (*wire.MsgTx, error) {
 
 	// Ensure the outputs to be created adhere to the network's consensus
 	// rules.
 	for _, output := range outputs {
-		err := txrules.CheckOutput(
-			output, txrules.DefaultRelayFeePerKb,
-		)
-		if err != nil {
-			return nil, err
+		if allowDust {
+			err := txrules.CheckOutputAllowDust(
+				output, txrules.DefaultRelayFeePerKb,
+			)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			err := txrules.CheckOutput(
+				output, txrules.DefaultRelayFeePerKb,
+			)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
