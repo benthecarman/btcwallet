@@ -3382,14 +3382,14 @@ func (w *Wallet) TotalReceivedForAddr(addr btcutil.Address, minConf int32) (btcu
 // returns the transaction upon success.
 func (w *Wallet) SendOutputs(outputs []*wire.TxOut, keyScope *waddrmgr.KeyScope,
 	account uint32, minconf int32, satPerKb btcutil.Amount,
-	coinSelectionStrategy CoinSelectionStrategy, label string) (
+	coinSelectionStrategy CoinSelectionStrategy, label string, allowDust bool) (
 	*wire.MsgTx, error) {
 
 	// Ensure the outputs to be created adhere to the network's consensus
 	// rules.
 	for _, output := range outputs {
 		err := txrules.CheckOutput(
-			output, txrules.DefaultRelayFeePerKb,
+			output, txrules.DefaultRelayFeePerKb, allowDust,
 		)
 		if err != nil {
 			return nil, err

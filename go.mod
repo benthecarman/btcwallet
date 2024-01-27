@@ -8,7 +8,7 @@ require (
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.1.0
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f
 	github.com/btcsuite/btcwallet/wallet/txauthor v1.3.2
-	github.com/btcsuite/btcwallet/wallet/txrules v1.2.0
+	github.com/btcsuite/btcwallet/wallet/txrules v1.2.1
 	github.com/btcsuite/btcwallet/wallet/txsizes v1.2.3
 	github.com/btcsuite/btcwallet/walletdb v1.4.0
 	github.com/btcsuite/btcwallet/wtxmgr v1.5.0
@@ -29,6 +29,8 @@ require (
 	golang.org/x/term v0.8.0
 	google.golang.org/grpc v1.53.0
 )
+
+replace github.com/btcsuite/btcwallet/wallet/txrules => ./wallet/txrules
 
 require (
 	github.com/aead/siphash v1.0.1 // indirect

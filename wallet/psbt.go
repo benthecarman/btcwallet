@@ -71,7 +71,7 @@ func (w *Wallet) FundPsbt(packet *psbt.Packet, keyScope *waddrmgr.KeyScope,
 		// effective fee rate to ensure accuracy. Otherwise, we may
 		// mistakenly mark small-ish, but not quite dust output as
 		// dust.
-		err := txrules.CheckOutput(output, txrules.DefaultRelayFeePerKb)
+		err := txrules.CheckOutput(output, txrules.DefaultRelayFeePerKb, false)
 		if err != nil {
 			return 0, err
 		}
